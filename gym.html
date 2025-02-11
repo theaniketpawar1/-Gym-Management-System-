@@ -1,0 +1,1740 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+            --background-color: rgba(244, 244, 244, 0.9);
+            --header-bg: #2c3e50;
+            --text-color: #333;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            padding: 20px;
+            color: var(--text-color);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in-out;
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 15px;
+        }
+
+        .header {
+            background-color: rgba(44, 62, 80, 0.95);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .header:hover {
+            transform: translateY(-5px);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background-color: rgba(44, 62, 80, 0.8);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-button:hover {
+            background-color: rgba(44, 62, 80, 0.9);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .tab-button.active {
+            background-color: var(--primary-color);
+        }
+
+        .tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .tab-button:hover::after {
+            transform: scaleX(1);
+        }
+
+        .tab-content {
+            display: none;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            animation: slideIn 0.5s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        button {
+            padding: 12px 24px;
+            background-color: rgba(76, 175, 80, 0.9);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--header-bg);
+            color: white;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(51, 51, 51, 0.95);
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 1000;
+            animation: slideInRight 0.5s ease-out;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .analytics-number {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 10px;
+        }
+
+        .member-analytics-table {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Add new animation for cards */
+        @keyframes cardFloat {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        .analytics-card:hover {
+            animation: cardFloat 3s ease-in-out infinite;
+        }
+
+        /* Add responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Add smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Add custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(244, 244, 244, 0.1);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-color);
+        }
+
+        .attendance-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .attendance-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .attendance-history-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .exercise-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .checkbox-label {
+            margin-left: 8px;
+        }
+
+        .active-sessions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .session-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .session-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .session-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .session-exercises {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Update existing button styles */
+        .primary-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .primary-button:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .attendance-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .history-filters {
+                width: 100%;
+            }
+        }
+
+        .present-members-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .member-count {
+            background: var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .member-count span {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input, .search-bar select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+        }
+
+        .search-bar input {
+            flex: 2;
+        }
+
+        .search-bar select {
+            flex: 1;
+        }
+
+        .present-members-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .member-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .member-card:hover {
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+        }
+
+        .member-details h3 {
+            margin: 0;
+            font-size: 1.1em;
+        }
+
+        .member-details p {
+            margin: 5px 0 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .exercise-tags {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .exercise-tag {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
+
+        .checkout-btn {
+            padding: 8px 15px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background: #c0392b;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .search-bar {
+                flex-direction: column;
+            }
+
+            .member-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+
+            .member-info {
+                flex-direction: column;
+            }
+
+            .exercise-tags {
+                justify-content: center;
+            }
+        }
+
+        .exercise-checkboxes {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .checkbox-container:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .exercise-details {
+            margin-top: 10px;
+            display: none;
+            gap: 10px;
+            padding-left: 25px;
+        }
+
+        .checkbox-container input[type="checkbox"]:checked ~ .exercise-details {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .exercise-input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            flex: 1;
+        }
+
+        .previous-attendance {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .attendance-record {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .attendance-record:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .exercise-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin: 2px;
+        }
+
+        .attendance-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        #sendOtpBtn {
+            position: absolute;
+            right: 0;
+            top: 25px;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        .otp-timer {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        #otp {
+            letter-spacing: 5px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Gym Management System</h1>
+            <div style="margin-top: 10px;">
+                <input type="file" id="excelFile" accept=".xlsx, .xls, .csv" style="display: none;" onchange="importFromExcel(this)">
+                <button onclick="document.getElementById('excelFile').click()">Import from Excel</button>
+                <button onclick="exportToExcel()">Export to CSV</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('members')">Members</button>
+            <button class="tab-button" onclick="showTab('attendance')">Attendance</button>
+            <button class="tab-button" onclick="showTab('membership')">Membership</button>
+            <button class="tab-button" onclick="showTab('workouts')">Workouts</button>
+            <button class="tab-button" onclick="showTab('analytics')">Analytics</button>
+        </div>
+
+        <div id="members" class="tab-content active">
+            <div class="form-container">
+                <h2>Add New Member</h2>
+                <form id="memberForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" required>
+                        <button type="button" id="sendOtpBtn" class="secondary-button">Send OTP</button>
+                    </div>
+                    <div class="form-group" id="otpGroup" style="display: none;">
+                        <label for="otp">Enter OTP:</label>
+                        <input type="text" id="otp" maxlength="6">
+                        <div class="otp-timer">OTP expires in: <span id="otpTimer">5:00</span></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="age">Age:</label>
+                        <input type="number" id="age" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="membershipType">Membership Type:</label>
+                        <select id="membershipType" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="primary-button" disabled id="submitBtn">Add Member</button>
+                </form>
+            </div>
+
+            <h2>Member List</h2>
+            <table id="memberTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Phone</th>
+                        <th>Membership</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="attendance" class="tab-content">
+            <div class="attendance-grid">
+                <!-- Check-in Section -->
+                <div class="attendance-card">
+                    <div class="card-header">
+                        <h2>Mark Attendance</h2>
+                    </div>
+                    <form id="attendanceForm">
+                        <div class="form-group">
+                            <label for="memberSelect">Select Member:</label>
+                            <select id="memberSelect" required>
+                                <option value="">Choose a member...</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="primary-button">Mark Attendance</button>
+                    </form>
+                </div>
+
+                <!-- Today's Attendance Section -->
+                <div class="attendance-card">
+                    <div class="card-header">
+                        <h2>Today's Attendance</h2>
+                        <div class="member-count">
+                            <span id="todayCount">0</span> members
+                        </div>
+                    </div>
+                    <div class="today-attendance" id="todayAttendanceList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance History -->
+            <div class="attendance-history-card">
+                <div class="history-header">
+                    <h2>Attendance History</h2>
+                    <div class="history-filters">
+                        <input type="text" id="searchAttendance" 
+                            placeholder="Search member..." onkeyup="filterAttendanceHistory()">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Member Name</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="membership" class="tab-content">
+            <h2>Membership Status</h2>
+            <table id="membershipTable">
+                <thead>
+                    <tr>
+                        <th>Member Name</th>
+                        <th>Membership Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="workouts" class="tab-content">
+            <div class="present-members-card">
+                <div class="card-header">
+                    <h2>Currently Present Members</h2>
+                    <div class="member-count">
+                        <span id="presentCount">0</span> members present
+                    </div>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" id="memberSearch" placeholder="Search members..." onkeyup="filterPresentMembers()">
+                    <select id="exerciseFilter" onchange="filterPresentMembers()">
+                        <option value="all">All Exercises</option>
+                        <option value="cardio">Cardio</option>
+                        <option value="weights">Weights</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="crossfit">CrossFit</option>
+                        <option value="swimming">Swimming</option>
+                    </select>
+                </div>
+
+                <div class="present-members-list" id="presentMembersList">
+                    <!-- Members will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="analytics" class="tab-content">
+            <h2>Member Time Analytics</h2>
+            <div class="form-group">
+                <label for="analyticsDateRange">Date Range:</label>
+                <select id="analyticsDateRange" onchange="updateAnalytics()">
+                    <option value="7">Last 7 Days</option>
+                    <option value="30">Last 30 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="all">All Time</option>
+                </select>
+            </div>
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>Total Members Active</h3>
+                    <div id="activeMembers" class="analytics-number">0</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Average Time per Visit</h3>
+                    <div id="averageTime" class="analytics-number">0 min</div>
+                </div>
+                <div class="analytics-card">
+                    <h3>Most Popular Time</h3>
+                    <div id="popularTime" class="analytics-number">-</div>
+                </div>
+            </div>
+            <div class="member-analytics-table">
+                <h3>Member Time Summary</h3>
+                <table id="analyticsTable">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Total Visits</th>
+                            <th>Total Time</th>
+                            <th>Average Time/Visit</th>
+                            <th>Most Common Workout</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading">
+        <div class="loading-spinner"></div>
+    </div>
+    <div class="toast"></div>
+
+    <script>
+        // Initialize EmailJS with your public key
+        (function() {
+            emailjs.init("YPt5VbhFj_WD7Pjq3n"); // Replace with your actual public key
+        })();
+
+        // Initialize data storage
+        function initializeStorage() {
+            if (!localStorage.getItem('members')) {
+                localStorage.setItem('members', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('attendance')) {
+                localStorage.setItem('attendance', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('memberships')) {
+                localStorage.setItem('memberships', JSON.stringify([]));
+            }
+            if (!localStorage.getItem('lastMemberId')) {
+                localStorage.setItem('lastMemberId', '0');
+            }
+        }
+
+        initializeStorage();
+
+        // Show loading spinner
+        function showLoading() {
+            document.querySelector('.loading').style.display = 'flex';
+        }
+
+        // Hide loading spinner
+        function hideLoading() {
+            document.querySelector('.loading').style.display = 'none';
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.querySelector('.toast');
+            toast.textContent = message;
+            toast.style.backgroundColor = type === 'success' ? '#4CAF50' : '#f44336';
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Store OTP and its expiry time
+        let currentOTP = null;
+        let otpExpiry = null;
+        let otpTimer = null;
+        let lastOTPSentTime = null;
+        const OTP_COOLDOWN = 60000; // 1 minute cooldown between OTP sends
+
+        // Generate random 6-digit OTP
+        function generateOTP() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Send OTP via email
+        async function sendOTP(email) {
+            try {
+                // Check cooldown
+                if (lastOTPSentTime && Date.now() - lastOTPSentTime < OTP_COOLDOWN) {
+                    const waitTime = Math.ceil((OTP_COOLDOWN - (Date.now() - lastOTPSentTime)) / 1000);
+                    showToast(`Please wait ${waitTime} seconds before requesting another OTP`, 'error');
+                    return;
+                }
+
+                showLoading();
+                
+                // Generate new OTP and set expiry time
+                currentOTP = generateOTP();
+                otpExpiry = new Date(Date.now() + 5 * 60000);
+
+                const templateParams = {
+                    to_email: email,
+                    otp: currentOTP,
+                    to_name: document.getElementById('name').value || 'Member'
+                };
+
+                console.log('Sending email with params:', templateParams); // Debug log
+
+                const response = await emailjs.send(
+                    "service_439imp6",  // Replace with your actual service ID
+                    "template_jaj6bgn", // Replace with your actual template ID
+                    templateParams
+                );
+
+                console.log('Email sent successfully:', response); // Debug log
+                
+                // Update last sent time
+                lastOTPSentTime = Date.now();
+                
+                document.getElementById('otpGroup').style.display = 'block';
+                document.getElementById('sendOtpBtn').textContent = 'Resend OTP';
+                startOTPTimer();
+                
+                hideLoading();
+                showToast('OTP sent to your email!');
+            } catch (error) {
+                console.error('Error sending OTP:', error); // Debug log
+                hideLoading();
+                showToast(`Failed to send OTP: ${error.message}`, 'error');
+            }
+        }
+
+        // Start OTP timer
+        function startOTPTimer() {
+            // Clear existing timer if any
+            if (otpTimer) clearInterval(otpTimer);
+            
+            const timerDisplay = document.getElementById('otpTimer');
+            
+            otpTimer = setInterval(() => {
+                const now = new Date();
+                const timeLeft = otpExpiry - now;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(otpTimer);
+                    currentOTP = null;
+                    timerDisplay.textContent = '0:00';
+                    document.getElementById('submitBtn').disabled = true;
+                    showToast('OTP expired. Please request a new one.', 'error');
+                    return;
+                }
+                
+                const minutes = Math.floor(timeLeft / 60000);
+                const seconds = Math.floor((timeLeft % 60000) / 1000);
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Verify OTP
+        function verifyOTP(enteredOTP) {
+            if (!currentOTP || !otpExpiry || new Date() > otpExpiry) {
+                showToast('OTP has expired. Please request a new one.', 'error');
+                return false;
+            }
+            
+            return enteredOTP === currentOTP;
+        }
+
+        // Add event listeners
+        document.getElementById('sendOtpBtn').addEventListener('click', function() {
+            const email = document.getElementById('email').value;
+            if (!email) {
+                showToast('Please enter an email address', 'error');
+                return;
+            }
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showToast('Please enter a valid email address', 'error');
+                return;
+            }
+
+            // Disable button during cooldown
+            this.disabled = true;
+            sendOTP(email).finally(() => {
+                setTimeout(() => {
+                    this.disabled = false;
+                }, OTP_COOLDOWN);
+            });
+        });
+
+        document.getElementById('otp').addEventListener('input', function(e) {
+            const enteredOTP = e.target.value;
+            if (enteredOTP.length === 6) {
+                if (verifyOTP(enteredOTP)) {
+                    document.getElementById('submitBtn').disabled = false;
+                    showToast('OTP verified successfully!');
+                } else {
+                    document.getElementById('submitBtn').disabled = true;
+                    showToast('Invalid OTP', 'error');
+                }
+            } else {
+                document.getElementById('submitBtn').disabled = true;
+            }
+        });
+
+        // Update the existing form submission handler
+        document.getElementById('memberForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!currentOTP || !verifyOTP(document.getElementById('otp').value)) {
+                showToast('Please verify your email with OTP', 'error');
+                return;
+            }
+
+            showLoading();
+
+            // Form validation
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = document.getElementById('age').value;
+            const phone = document.getElementById('phone').value.trim();
+
+            if (name.length < 2) {
+                showToast('Name must be at least 2 characters long', 'error');
+                hideLoading();
+                return;
+            }
+
+            if (age < 12 || age > 100) {
+                showToast('Age must be between 12 and 100', 'error');
+                hideLoading();
+                return;
+            }
+
+            if (!phone.match(/^\d{10}$/)) {
+                showToast('Please enter a valid 10-digit phone number', 'error');
+                hideLoading();
+                return;
+            }
+
+            const lastId = parseInt(localStorage.getItem('lastMemberId')) || 0;
+            const newId = lastId + 1;
+            
+            const member = {
+                id: newId,
+                name: name,
+                email: email,
+                age: age,
+                phone: phone,
+                membershipType: document.getElementById('membershipType').value
+            };
+
+            // Save member
+            const members = JSON.parse(localStorage.getItem('members')) || [];
+            members.push(member);
+            localStorage.setItem('members', JSON.stringify(members));
+            localStorage.setItem('lastMemberId', newId.toString());
+
+            // Reset form and OTP
+            this.reset();
+            currentOTP = null;
+            if (otpTimer) clearInterval(otpTimer);
+            document.getElementById('otpGroup').style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+
+            updateMemberTable();
+            updateMemberSelect();
+            
+            setTimeout(() => {
+                hideLoading();
+                showToast('Member added successfully!');
+            }, 500);
+        });
+
+        function updateMemberTable() {
+            const members = JSON.parse(localStorage.getItem('members'));
+            const tbody = document.querySelector('#memberTable tbody');
+            tbody.innerHTML = '';
+
+            members.forEach(member => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${member.id}</td>
+                    <td>${member.name}</td>
+                    <td>${member.age}</td>
+                    <td>${member.phone}</td>
+                    <td>${member.membershipType}</td>
+                    <td><button onclick="deleteMember(${member.id})">Delete</button></td>
+                `;
+            });
+        }
+
+        function updateMemberSelect() {
+            const members = JSON.parse(localStorage.getItem('members'));
+            const select = document.getElementById('memberSelect');
+            select.innerHTML = '<option value="">Choose a member...</option>';
+            
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                select.appendChild(option);
+            });
+        }
+
+        function markAttendance() {
+            const memberId = document.getElementById('memberSelect').value;
+            if (!memberId) {
+                alert('Please select a member');
+                return;
+            }
+
+            const members = JSON.parse(localStorage.getItem('members'));
+            const member = members.find(m => m.id == memberId);
+            const now = new Date();
+
+            const attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+            
+            // Check if member already marked attendance today
+            const today = now.toLocaleDateString();
+            const alreadyMarked = attendance.some(a => 
+                a.memberId == memberId && 
+                new Date(a.date).toLocaleDateString() === today
+            );
+
+            if (alreadyMarked) {
+                alert('Attendance already marked for today');
+                return;
+            }
+
+            attendance.push({
+                memberId: memberId,
+                memberName: member.name,
+                date: now.toISOString(),
+                time: now.toLocaleTimeString()
+            });
+            localStorage.setItem('attendance', JSON.stringify(attendance));
+
+            updateTodayAttendance();
+            updateAttendanceTable();
+            document.getElementById('memberSelect').value = ''; // Reset select
+            alert('Attendance marked successfully!');
+        }
+
+        function updateTodayAttendance() {
+            const attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+            const today = new Date().toLocaleDateString();
+            const todayAttendance = attendance.filter(a => 
+                new Date(a.date).toLocaleDateString() === today
+            );
+
+            const container = document.getElementById('todayAttendanceList');
+            const countElement = document.getElementById('todayCount');
+            
+            container.innerHTML = '';
+            countElement.textContent = todayAttendance.length;
+
+            if (todayAttendance.length === 0) {
+                container.innerHTML = '<div class="attendance-row">No attendance records for today</div>';
+                return;
+            }
+
+            todayAttendance.forEach(record => {
+                const div = document.createElement('div');
+                div.className = 'attendance-row';
+                div.innerHTML = `
+                    <div>
+                        <strong>${record.memberName}</strong>
+                        <div>Time: ${record.time}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function updateAttendanceTable() {
+            const attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+            const tbody = document.querySelector('#attendanceTable tbody');
+            tbody.innerHTML = '';
+
+            attendance.sort((a, b) => new Date(b.date) - new Date(a.date))
+                .forEach(record => {
+                    const row = tbody.insertRow();
+                    const date = new Date(record.date);
+                    row.innerHTML = `
+                        <td>${record.memberName}</td>
+                        <td>${date.toLocaleDateString()}</td>
+                        <td>${record.time}</td>
+                    `;
+                });
+        }
+
+        function filterAttendanceHistory() {
+            const searchTerm = document.getElementById('searchAttendance').value.toLowerCase();
+            const rows = document.querySelectorAll('#attendanceTable tbody tr');
+
+            rows.forEach(row => {
+                const memberName = row.cells[0].textContent.toLowerCase();
+                row.style.display = memberName.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Add form submit event listener
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            markAttendance();
+        });
+
+        // Initialize the page
+        updateMemberSelect();
+        updateTodayAttendance();
+        updateAttendanceTable();
+
+        function updateMembershipTable() {
+            const memberships = JSON.parse(localStorage.getItem('memberships'));
+            const tbody = document.querySelector('#membershipTable tbody');
+            tbody.innerHTML = '';
+
+            memberships.forEach(membership => {
+                const status = new Date() > new Date(membership.endDate) ? 'Expired' : 'Active';
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${membership.memberName}</td>
+                    <td>${membership.type}</td>
+                    <td>${new Date(membership.startDate).toLocaleDateString()}</td>
+                    <td>${new Date(membership.endDate).toLocaleDateString()}</td>
+                    <td>${status}</td>
+                `;
+            });
+        }
+
+        function deleteMember(id) {
+            if (!confirm('Are you sure you want to delete this member?')) {
+                return;
+            }
+
+            showLoading();
+            setTimeout(() => {
+                // Delete member
+                let members = JSON.parse(localStorage.getItem('members'));
+                members = members.filter(member => member.id !== id);
+                localStorage.setItem('members', JSON.stringify(members));
+
+                // Delete membership
+                let memberships = JSON.parse(localStorage.getItem('memberships'));
+                memberships = memberships.filter(membership => membership.memberId !== id);
+                localStorage.setItem('memberships', JSON.stringify(memberships));
+
+                // Delete attendance records
+                let attendance = JSON.parse(localStorage.getItem('attendance'));
+                attendance = attendance.filter(record => record.memberId !== id);
+                localStorage.setItem('attendance', JSON.stringify(attendance));
+
+                updateMemberTable();
+                updateMemberSelect();
+                updateMembershipTable();
+                updateAttendanceTable();
+
+                showToast('Member deleted successfully!');
+            }, 500);
+        }
+
+        // Enhanced import function with progress
+        function importFromExcel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            showLoading();
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+
+                    // Assuming first sheet contains members
+                    const memberSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const members = XLSX.utils.sheet_to_json(memberSheet);
+
+                    // Process and store members
+                    const processedMembers = members.map(member => ({
+                        id: member.ID || member.id,
+                        name: member.Name || member.name,
+                        age: member.Age || member.age,
+                        phone: member.Phone || member.phone,
+                        membershipType: member['Membership Type'] || member.membershipType
+                    }));
+
+                    // Update localStorage
+                    localStorage.setItem('members', JSON.stringify(processedMembers));
+
+                    // Find highest ID for lastMemberId
+                    const maxId = Math.max(...processedMembers.map(m => m.id));
+                    localStorage.setItem('lastMemberId', maxId.toString());
+
+                    // If there are more sheets, process them
+                    if (workbook.SheetNames.length > 1) {
+                        // Process attendance
+                        const attendanceSheet = workbook.Sheets[workbook.SheetNames[1]];
+                        const attendance = XLSX.utils.sheet_to_json(attendanceSheet);
+                        localStorage.setItem('attendance', JSON.stringify(attendance));
+
+                        // Process memberships
+                        if (workbook.SheetNames.length > 2) {
+                            const membershipSheet = workbook.Sheets[workbook.SheetNames[2]];
+                            const memberships = XLSX.utils.sheet_to_json(membershipSheet);
+                            localStorage.setItem('memberships', JSON.stringify(memberships));
+                        }
+                    }
+
+                    // Update all tables
+                    updateMemberTable();
+                    updateMemberSelect();
+                    updateMembershipTable();
+                    updateAttendanceTable();
+
+                    showToast('Data imported successfully!');
+                } catch (error) {
+                    showToast('Error importing data: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            };
+
+            reader.onerror = function() {
+                hideLoading();
+                showToast('Error reading file', 'error');
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Enhanced export function
+        function exportToExcel() {
+            showLoading();
+            setTimeout(() => {
+                try {
+                    const members = JSON.parse(localStorage.getItem('members'));
+                    const attendance = JSON.parse(localStorage.getItem('attendance'));
+                    const memberships = JSON.parse(localStorage.getItem('memberships'));
+
+                    // Create workbook with multiple sheets
+                    const wb = XLSX.utils.book_new();
+
+                    // Add Members sheet
+                    const membersWS = XLSX.utils.json_to_sheet(members.map(member => ({
+                        ID: member.id,
+                        Name: member.name,
+                        Age: member.age,
+                        Phone: member.phone,
+                        'Membership Type': member.membershipType
+                    })));
+                    XLSX.utils.book_append_sheet(wb, membersWS, 'Members');
+
+                    // Add Attendance sheet
+                    const attendanceWS = XLSX.utils.json_to_sheet(attendance.map(record => ({
+                        'Member Name': record.memberName,
+                        Date: record.date,
+                        Time: record.time
+                    })));
+                    XLSX.utils.book_append_sheet(wb, attendanceWS, 'Attendance');
+
+                    // Add Memberships sheet
+                    const membershipsWS = XLSX.utils.json_to_sheet(memberships.map(membership => ({
+                        'Member Name': membership.memberName,
+                        Type: membership.type,
+                        'Start Date': new Date(membership.startDate).toLocaleDateString(),
+                        'End Date': new Date(membership.endDate).toLocaleDateString()
+                    })));
+                    XLSX.utils.book_append_sheet(wb, membershipsWS, 'Memberships');
+
+                    // Save the file
+                    XLSX.writeFile(wb, 'gym_data.xlsx');
+
+                    showToast('Data exported successfully!');
+                } catch (error) {
+                    showToast('Error exporting data: ' + error.message, 'error');
+                } finally {
+                    hideLoading();
+                }
+            }, 500);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Initialize workout storage
+        if (!localStorage.getItem('workouts')) {
+            localStorage.setItem('workouts', JSON.stringify([]));
+        }
+
+        // Update member select in workout form
+        function updateWorkoutMemberSelect() {
+            const members = JSON.parse(localStorage.getItem('members'));
+            const select = document.getElementById('workoutMemberSelect');
+            select.innerHTML = '<option value="">Select a member</option>';
+            
+            members.forEach(member => {
+                const option = document.createElement('option');
+                option.value = member.id;
+                option.textContent = member.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Handle workout form submission
+        document.getElementById('workoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showLoading();
+
+            const memberId = document.getElementById('workoutMemberSelect').value;
+            const checkIn = new Date(document.getElementById('checkInTime').value);
+            const checkOut = new Date(document.getElementById('checkOutTime').value);
+
+            // Validation
+            if (checkOut <= checkIn) {
+                showToast('Check-out time must be after check-in time', 'error');
+                hideLoading();
+                return;
+            }
+
+            const member = JSON.parse(localStorage.getItem('members'))
+                .find(m => m.id == memberId);
+
+            const workout = {
+                memberId: memberId,
+                memberName: member.name,
+                checkIn: checkIn.toISOString(),
+                checkOut: checkOut.toISOString(),
+                duration: (checkOut - checkIn) / (1000 * 60), // Duration in minutes
+                workoutType: document.getElementById('workoutType').value,
+                notes: document.getElementById('notes').value
+            };
+
+            const workouts = JSON.parse(localStorage.getItem('workouts'));
+            workouts.push(workout);
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+
+            updateWorkoutTable();
+            updateAnalytics();
+            this.reset();
+
+            setTimeout(() => {
+                hideLoading();
+                showToast('Workout session recorded successfully!');
+            }, 500);
+        });
+
+        // Update workout history table
+        function updateWorkoutTable() {
+            const workouts = JSON.parse(localStorage.getItem('workouts'));
+            const tbody = document.querySelector('#workoutTable tbody');
+            tbody.innerHTML = '';
+
+            workouts.forEach(workout => {
+                const row = tbody.insertRow();
+                const checkIn = new Date(workout.checkIn);
+                const checkOut = new Date(workout.checkOut);
+                
+                row.innerHTML = `
+                    <td>${workout.memberName}</td>
+                    <td>${checkIn.toLocaleDateString()}</td>
+                    <td>${checkIn.toLocaleTimeString()}</td>
+                    <td>${checkOut.toLocaleTimeString()}</td>
+                    <td>${workout.duration.toFixed(0)} min</td>
+                    <td>${workout.workoutType}</td>
+                    <td>${workout.notes}</td>
+                `;
+            });
+        }
+
+        // Update analytics
+        function updateAnalytics() {
+            const workouts = JSON.parse(localStorage.getItem('workouts'));
+            const range = parseInt(document.getElementById('analyticsDateRange').value);
+            const cutoffDate = range ? new Date(Date.now() - range * 24 * 60 * 60 * 1000) : new Date(0);
+
+            // Filter workouts within date range
+            const filteredWorkouts = workouts.filter(w => new Date(w.checkIn) > cutoffDate);
+
+            // Calculate analytics
+            const activeMembers = new Set(filteredWorkouts.map(w => w.memberId)).size;
+            const averageTime = filteredWorkouts.reduce((acc, w) => acc + w.duration, 0) / filteredWorkouts.length;
+            
+            // Update summary cards
+            document.getElementById('activeMembers').textContent = activeMembers;
+            document.getElementById('averageTime').textContent = `${averageTime.toFixed(0)} min`;
+            
+            // Calculate member summaries
+            const memberSummaries = {};
+            filteredWorkouts.forEach(workout => {
+                if (!memberSummaries[workout.memberId]) {
+                    memberSummaries[workout.memberId] = {
+                        name: workout.memberName,
+                        visits: 0,
+                        totalTime: 0,
+                        workoutTypes: {}
+                    };
+                }
+                
+                memberSummaries[workout.memberId].visits++;
+                memberSummaries[workout.memberId].totalTime += workout.duration;
+                memberSummaries[workout.memberId].workoutTypes[workout.workoutType] = 
+                    (memberSummaries[workout.memberId].workoutTypes[workout.workoutType] || 0) + 1;
+            });
+
+            // Update analytics table
+            const tbody = document.querySelector('#analyticsTable tbody');
+            tbody.innerHTML = '';
+
+            Object.values(memberSummaries).forEach(summary => {
+                const mostCommonWorkout = Object.entries(summary.workoutTypes)
+                    .sort((a, b) => b[1] - a[1])[0]?.[0] || '-';
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${summary.name}</td>
+                    <td>${summary.visits}</td>
+                    <td>${summary.totalTime.toFixed(0)} min</td>
+                    <td>${(summary.totalTime / summary.visits).toFixed(0)} min</td>
+                    <td>${mostCommonWorkout}</td>
+                `;
+            });
+        }
+
+        // Update all tables and selects
+        updateWorkoutMemberSelect();
+        updateWorkoutTable();
+        updateAnalytics();
+    </script>
+</body>
+</html>
